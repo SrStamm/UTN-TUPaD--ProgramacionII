@@ -1,0 +1,31 @@
+package service;
+
+import dao.CategoriaDAO;
+import model.Categoria;
+
+public class CategoriaServiceImpl {
+  private final CategoriaDAO categoriaDAO;
+
+  public CategoriaServiceImpl(CategoriaDAO categoriaDAO) {
+    this.categoriaDAO = categoriaDAO;
+  }
+
+  private void validarNombre(String nombre) {
+    if (nombre == null || nombre.trim().isEmpty()) {
+      throw new IllegalArgumentException("El nombre no puede estar vacío");
+    }
+  }
+
+  public Categoria crearCategoria(Categoria c) {
+    // Valida que el nombre no este vacío
+    validarNombre(c.getNombre());
+
+    // Valida que no existan otras categorías con el mismo nombre
+    boolean existe = this.categoriaDAO.existeNombre(c.getNombre());
+    if (existe) {
+      throw new IllegalArgumentException("Ya existe una Categoria con el mismo nombre");
+    }
+
+    return this.categoriaDAO.crear(c);
+  }
+}
