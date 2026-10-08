@@ -90,6 +90,22 @@ public class CategoriaDAOImpl
 
   @Override
   public boolean eliminar(int id) {
+    String sql = "Delete FROM categoria WHERE id = ?";
+
+    try (
+        Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setInt(1, id);
+      int filasAfectadas = stmt.executeUpdate();
+
+      return filasAfectadas > 0;
+    } catch (
+
+    Exception e) {
+      System.err.println("Error al eliminar la categoria con ID=" + id + ": " + e.getMessage());
+    }
+
     return false;
   }
 

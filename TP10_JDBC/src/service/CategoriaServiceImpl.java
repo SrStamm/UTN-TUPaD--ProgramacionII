@@ -36,4 +36,8 @@ public class CategoriaServiceImpl {
   public boolean actualizarCategoria(Categoria c) {
     return this.categoriaDAO.actualizar(c);
   }
+
+  public boolean eliminarCategoriaPorId(int id) {
+    return this.categoriaDAO.eliminar(id);
+  }
 }
