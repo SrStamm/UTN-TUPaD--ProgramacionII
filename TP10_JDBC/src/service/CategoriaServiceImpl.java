@@ -32,4 +32,8 @@ public class CategoriaServiceImpl {
   public Categoria leerCategoria(int id) {
     return this.categoriaDAO.leer(id);
   }
+
+  public boolean actualizarCategoria(Categoria c) {
+    return this.categoriaDAO.actualizar(c);
+  }
 }

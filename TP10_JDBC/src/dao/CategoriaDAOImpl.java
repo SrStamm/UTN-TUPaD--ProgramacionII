@@ -13,13 +13,14 @@ public class CategoriaDAOImpl
 
   @Override
   public Categoria crear(Categoria c) {
-    try (Connection conn = DatabaseConnection.getConnection()) {
-      // SQL para insertar los datos
-      String sql = "INSERT INTO categoria (nombre, descripcion) VALUES (?, ?)";
+    // SQL para insertar los datos
+    String sql = "INSERT INTO categoria (nombre, descripcion) VALUES (?, ?)";
 
+    try (
+        Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
       // Crea el stmt e inserta los datos de forma segura
       // RETURN_GENERATED_KEYS para que devuelva el id
-      PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
       stmt.setString(1, c.getNombre());
       stmt.setString(2, c.getDescripcion());
       stmt.executeUpdate();
@@ -32,7 +33,9 @@ public class CategoriaDAOImpl
       }
 
       return c;
-    } catch (Exception e) {
+    } catch (
+
+    Exception e) {
       System.err.println("Error al persistir una nueva categoria: " + e.getMessage());
     }
 
@@ -64,6 +67,24 @@ public class CategoriaDAOImpl
 
   @Override
   public boolean actualizar(Categoria c) {
+    // SQL para insertar los datos
+    String sql = "UPDATE categoria SET nombre = ?,  descripcion = ? WHERE id = ?";
+
+    try (
+        Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, c.getNombre());
+      stmt.setString(2, c.getDescripcion());
+      stmt.setInt(3, c.getId());
+      int filasAfectadas = stmt.executeUpdate();
+
+      return filasAfectadas > 0;
+    } catch (
+
+    Exception e) {
+      System.err.println("Error al actualizar la categoria con ID=" + c.getId() + ": " + e.getMessage());
+    }
+
     return false;
   }
 
