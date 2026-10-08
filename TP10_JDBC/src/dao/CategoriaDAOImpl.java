@@ -16,7 +16,7 @@ public class CategoriaDAOImpl
     try (Connection conn = DatabaseConnection.getConnection()) {
       // SQL para insertar los datos
       String sql = "INSERT INTO categoria (nombre, descripcion) VALUES (?, ?)";
-      
+
       // Crea el stmt e inserta los datos de forma segura
       // RETURN_GENERATED_KEYS para que devuelva el id
       PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -34,33 +34,51 @@ public class CategoriaDAOImpl
       return c;
     } catch (Exception e) {
       System.err.println("Error al persistir una nueva categoria: " + e.getMessage());
-    } 
-    
+    }
+
     return null;
   }
 
   @Override
   public Categoria leer(int id) {
-      return null;
+    String sql = "SELECT * FROM categoria WHERE id = ?";
+
+    try (Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setInt(1, id);
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          String nombre = rs.getString("nombre");
+          String descripcion = rs.getString("descripcion");
+
+          return new Categoria(id, nombre, descripcion);
+        }
+      }
+    } catch (Exception e) {
+      System.err.println("Error al obtener categoria de ID=" + id + " : " + e.getMessage());
+    }
+    return null;
   }
 
   @Override
   public boolean actualizar(Categoria c) {
-      return false;
+    return false;
   }
 
   @Override
   public boolean eliminar(int id) {
-      return false;
+    return false;
   }
 
   @Override
   public List<Categoria> listar() {
-      return null;
+    return null;
   }
 
   @Override
   public boolean existeNombre(String nombre) {
-      return false;
+    return false;
   }
 }

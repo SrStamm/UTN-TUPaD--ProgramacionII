@@ -14,9 +14,14 @@ public class Categoria {
   public Categoria(String nombre, String descripcion) {
     this(0, nombre, descripcion);
   }
-  
+
   public Categoria(String nombre) {
     this(0, nombre, "");
+  }
+
+  @Override
+  public String toString() {
+    return "Categoria = {id= " + id + " nombre= " + nombre + " descripcion=" + descripcion + "}";
   }
 
   public String getNombre() {
@@ -27,15 +32,13 @@ public class Categoria {
     return descripcion;
   }
 
-    public int getId() {
-        return id;
-    }
+  public int getId() {
+    return id;
+  }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-  
-  
+  public void setId(int id) {
+    this.id = id;
+  }
 
   public void setDescripcion(String descripcion) {
     this.descripcion = descripcion;

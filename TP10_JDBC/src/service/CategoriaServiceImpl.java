@@ -28,4 +28,8 @@ public class CategoriaServiceImpl {
 
     return this.categoriaDAO.crear(c);
   }
+
+  public Categoria leerCategoria(int id) {
+    return this.categoriaDAO.leer(id);
+  }
 }
