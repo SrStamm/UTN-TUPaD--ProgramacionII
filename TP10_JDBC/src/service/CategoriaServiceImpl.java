@@ -46,4 +46,8 @@ public class CategoriaServiceImpl {
   public boolean eliminarCategoriaPorId(int id) {
     return this.categoriaDAO.eliminar(id);
   }
+
+  public boolean validarSiExisteNombre(String nombre) {
+    return this.categoriaDAO.existeNombre(nombre);
+  }
 }

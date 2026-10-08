@@ -141,6 +141,20 @@ public class CategoriaDAOImpl
 
   @Override
   public boolean existeNombre(String nombre) {
+    String sql = "SELECT COUNT(*) FROM categoria WHERE nombre = ?";
+
+    try (Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setString(1, nombre);
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        return rs.next();
+      }
+    } catch (Exception e) {
+      System.err.println("Error al verificar si existe el nombre '" + nombre + "': " + e.getMessage());
+    }
+
     return false;
   }
 }
