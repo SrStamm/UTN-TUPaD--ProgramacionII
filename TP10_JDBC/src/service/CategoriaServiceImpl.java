@@ -1,5 +1,7 @@
 package service;
 
+import java.util.List;
+
 import dao.CategoriaDAO;
 import model.Categoria;
 
@@ -31,6 +33,10 @@ public class CategoriaServiceImpl {
 
   public Categoria leerCategoria(int id) {
     return this.categoriaDAO.leer(id);
+  }
+
+  public List<Categoria> listarCategorias() {
+    return this.categoriaDAO.listar();
   }
 
   public boolean actualizarCategoria(Categoria c) {

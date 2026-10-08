@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import model.Categoria;
 
@@ -111,7 +112,31 @@ public class CategoriaDAOImpl
 
   @Override
   public List<Categoria> listar() {
-    return null;
+    List<Categoria> arrayCategoria = new ArrayList<>();
+    String sql = "SELECT * FROM categoria";
+
+    try (Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      try (ResultSet rs = stmt.executeQuery()) {
+
+        while (rs.next()) {
+
+          String nombre = rs.getString("nombre");
+          String descripcion = rs.getString("descripcion");
+          int id = rs.getInt("id");
+
+          arrayCategoria.add(new Categoria(id, nombre, descripcion));
+        }
+        return arrayCategoria;
+
+      }
+    } catch (Exception e) {
+      System.err.println("Error al obtener las categorias: " + e.getMessage());
+    }
+
+    return arrayCategoria;
+
   }
 
   @Override
