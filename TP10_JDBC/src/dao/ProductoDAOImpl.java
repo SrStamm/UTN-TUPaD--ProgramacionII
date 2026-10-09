@@ -119,7 +119,7 @@ public class ProductoDAOImpl implements ProductoDAO {
   @Override
   public List<Producto> listar() {
     List<Producto> arrayProducto = new ArrayList<>();
-    String sql = "SELECT * FROM producto";
+    String sql = "SELECT * FROM productos";
 
     try (Connection conn = DatabaseConnection.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -157,7 +157,12 @@ public class ProductoDAOImpl implements ProductoDAO {
       stmt.setString(1, nombre);
 
       try (ResultSet rs = stmt.executeQuery()) {
-        return rs.next();
+        // COUNT(*) siempre devuelve una fila: hay que leer el valor,
+        // rs.next() solo confirma que hay fila (siempre true).
+        if (rs.next()) {
+          return rs.getInt(1) > 0;
+        }
+        return false;
       }
     } catch (Exception e) {
       System.err.println("Error al verificar si existe el nombre '" + nombre + "': " + e.getMessage());
