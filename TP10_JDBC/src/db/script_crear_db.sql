@@ -1,0 +1,35 @@
+CREATE DATABASE IF NOT EXISTS db;
+
+USE db;
+
+CREATE TABLE IF NOT EXISTS categoria (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL UNIQUE,
+  descripcion VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS productos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  descripcion VARCHAR(255),
+  precio DECIMAL(10,2) NOT NULL,
+  cantidad INT NOT NULL,
+  id_categoria INT,
+  FOREIGN KEY(id_categoria) REFERENCES categoria(id)
+);
+
+CREATE TABLE IF NOT EXISTS pedidos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  total DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS items_pedido (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  pedido_id INT NOT NULL,
+  producto_id INT NOT NULL,
+  cantidad INT NOT NULL,
+  subtotal DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (pedido_id) REFERENCES pedidos(id),
+  FOREIGN KEY (producto_id) REFERENCES productos(id)
+);
