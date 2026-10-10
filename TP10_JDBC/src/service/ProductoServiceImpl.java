@@ -8,11 +8,9 @@ import model.Producto;
 
 public class ProductoServiceImpl {
   private final ProductoDAO prodDAO;
-  private final CategoriaDAO catDAO;
 
-  public ProductoServiceImpl(ProductoDAO prodDAO, CategoriaDAO catDAO) {
+  public ProductoServiceImpl(ProductoDAO prodDAO) {
     this.prodDAO = prodDAO;
-    this.catDAO = catDAO;
   }
 
   private void validarNombre(String nombre) {
@@ -32,7 +30,7 @@ public class ProductoServiceImpl {
   }
 
   private void validarCategoriaValida(int id) {
-    if (catDAO.leer(id) == null)
+    if (!this.prodDAO.existeCategoria(id))
       throw new IllegalArgumentException("Error: el ID de categoria no es válido");
   }
 
@@ -67,5 +65,9 @@ public class ProductoServiceImpl {
 
   public boolean eliminarProductoPorId(int id) {
     return this.prodDAO.eliminar(id);
+  }
+
+  public List<Producto> listarPorCategoria(int idCategoria) {
+    return prodDAO.listarPorCategoria(idCategoria);
   }
 }

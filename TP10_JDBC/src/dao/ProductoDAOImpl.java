@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.print.DocFlavor.STRING;
+
 import model.Producto;
 import excepciones.DataAccessException;
 
@@ -155,6 +158,58 @@ public class ProductoDAOImpl implements ProductoDAO {
       }
     } catch (Exception e) {
       throw new DataAccessException("Error al verificar si existe el nombre '" + nombre + "': " + e.getMessage());
+    }
+  }
+
+  @Override
+  public List<Producto> listarPorCategoria(int idCategoria) {
+    List<Producto> arrayProducto = new ArrayList<>();
+    String sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.cantidad, p.id_categoria FROM productos p JOIN categoria c ON p.id_categoria = c.id WHERE c.id = ?";
+
+    try (Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setInt(1, idCategoria);
+
+      try (ResultSet rs = stmt.executeQuery()) {
+
+        while (rs.next()) {
+          int id = rs.getInt("id");
+          String nombre = rs.getString("nombre");
+          String descripcion = rs.getString("descripcion");
+          double precio = rs.getDouble("precio");
+          int cantidad = rs.getInt("cantidad");
+          int id_categoria = rs.getInt("id_categoria");
+
+          arrayProducto.add(new Producto(id, nombre, descripcion, precio, cantidad, id_categoria));
+        }
+
+        return arrayProducto;
+
+      }
+    } catch (Exception e) {
+      throw new DataAccessException(
+          "Error al obtener los productos por categoria=" + idCategoria + " : " + e.getMessage());
+    }
+  }
+
+  @Override
+  public boolean existeCategoria(int idCategoria) {
+    String sql = "SELECT COUNT(*) FROM categoria WHERE id = ?";
+
+    try (Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setInt(1, idCategoria);
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          return rs.getInt(1) > 0;
+        }
+        return false;
+      }
+    } catch (Exception e) {
+      throw new DataAccessException(
+          "Error al verificar si existe la categoria ID=" + idCategoria + " : " + e.getMessage());
     }
   }
 }
