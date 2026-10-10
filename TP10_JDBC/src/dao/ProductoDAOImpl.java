@@ -1,8 +1,6 @@
 package dao;
 
 import config.DatabaseConnection;
-import dao.ProductoDAO;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Producto;
+import excepciones.DataAccessException;
 
 public class ProductoDAOImpl implements ProductoDAO {
   @Override
@@ -34,13 +33,9 @@ public class ProductoDAOImpl implements ProductoDAO {
       }
 
       return p;
-    } catch (
-
-    Exception e) {
-      System.err.println("Error al persistir un nuevo producto: " + e.getMessage());
+    } catch (Exception e) {
+      throw new DataAccessException("Error al persistir un nuevo producto: " + e.getMessage());
     }
-
-    return null;
   }
 
   @Override
@@ -64,7 +59,7 @@ public class ProductoDAOImpl implements ProductoDAO {
         }
       }
     } catch (Exception e) {
-      System.err.println("Error al obtener producto de ID=" + id + " : " + e.getMessage());
+      throw new DataAccessException("Error al obtener producto de ID=" + id + " : " + e.getMessage());
     }
     return null;
   }
@@ -89,10 +84,8 @@ public class ProductoDAOImpl implements ProductoDAO {
     } catch (
 
     Exception e) {
-      System.err.println("Error al actualizar el producto con ID=" + p.getId() + ": " + e.getMessage());
+      throw new DataAccessException("Error al actualizar el producto con ID=" + p.getId() + ": " + e.getMessage());
     }
-
-    return false;
   }
 
   @Override
@@ -110,10 +103,8 @@ public class ProductoDAOImpl implements ProductoDAO {
     } catch (
 
     Exception e) {
-      System.err.println("Error al eliminar el producto con ID=" + id + ": " + e.getMessage());
+      throw new DataAccessException("Error al eliminar el producto con ID=" + id + ": " + e.getMessage());
     }
-
-    return false;
   }
 
   @Override
@@ -141,10 +132,8 @@ public class ProductoDAOImpl implements ProductoDAO {
 
       }
     } catch (Exception e) {
-      System.err.println("Error al obtener las productos: " + e.getMessage());
+      throw new DataAccessException("Error al obtener las productos: " + e.getMessage());
     }
-
-    return arrayProducto;
   }
 
   @Override
@@ -165,9 +154,7 @@ public class ProductoDAOImpl implements ProductoDAO {
         return false;
       }
     } catch (Exception e) {
-      System.err.println("Error al verificar si existe el nombre '" + nombre + "': " + e.getMessage());
+      throw new DataAccessException("Error al verificar si existe el nombre '" + nombre + "': " + e.getMessage());
     }
-
-    return false;
   }
 }

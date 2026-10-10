@@ -2,14 +2,17 @@ package service;
 
 import java.util.List;
 
-import dao.ProductoDAOImpl;
+import dao.CategoriaDAO;
+import dao.ProductoDAO;
 import model.Producto;
 
 public class ProductoServiceImpl {
-  private final ProductoDAOImpl prodDAO;
+  private final ProductoDAO prodDAO;
+  private final CategoriaDAO catDAO;
 
-  public ProductoServiceImpl(ProductoDAOImpl prodDAO) {
+  public ProductoServiceImpl(ProductoDAO prodDAO, CategoriaDAO catDAO) {
     this.prodDAO = prodDAO;
+    this.catDAO = catDAO;
   }
 
   private void validarNombre(String nombre) {
@@ -18,9 +21,27 @@ public class ProductoServiceImpl {
     }
   }
 
+  private void validarPrecio(double precio) {
+    if (precio <= 0)
+      throw new IllegalArgumentException("Error: el precio debe ser mayor a 0");
+  }
+
+  private void validarCantidad(int cantidad) {
+    if (cantidad <= 0)
+      throw new IllegalArgumentException("Error: la cantidad debe ser mayor a 0");
+  }
+
+  private void validarCategoriaValida(int id) {
+    if (catDAO.leer(id) == null)
+      throw new IllegalArgumentException("Error: el ID de categoria no es válido");
+  }
+
   public Producto crearProducto(Producto p) {
     // Valida que el nombre no este vacío
     validarNombre(p.getNombre());
+    validarCategoriaValida(p.getId_categoria());
+    validarCantidad(p.getCantidad());
+    validarPrecio(p.getPrecio());
 
     // Valida que no existan otras categorías con el mismo nombre
     boolean existe = this.prodDAO.existeNombre(p.getNombre());
