@@ -4,11 +4,10 @@ import config.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.print.DocFlavor.STRING;
 
 import model.Producto;
 import excepciones.DataAccessException;
@@ -37,17 +36,23 @@ public class ProductoDAOImpl implements ProductoDAO {
 
       return p;
     } catch (Exception e) {
-      throw new DataAccessException("Error al persistir un nuevo producto: " + e.getMessage());
+      throw new DataAccessException("Error al persistir un nuevo producto.", e);
     }
   }
 
   @Override
   public Producto leer(int id) {
+    try (Connection conn = DatabaseConnection.getConnection()) {
+      return leer(id, conn);
+    } catch (SQLException e) {
+      throw new DataAccessException("Error de conexión al intentar leer el pedido ID=" + id + ".", e);
+    }
+  }
+
+  public Producto leer(int id, Connection c) {
     String sql = "SELECT * FROM productos WHERE id = ?";
 
-    try (Connection conn = DatabaseConnection.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+    try (PreparedStatement stmt = c.prepareStatement(sql)) {
       stmt.setInt(1, id);
 
       try (ResultSet rs = stmt.executeQuery()) {
@@ -62,7 +67,7 @@ public class ProductoDAOImpl implements ProductoDAO {
         }
       }
     } catch (Exception e) {
-      throw new DataAccessException("Error al obtener producto de ID=" + id + " : " + e.getMessage());
+      throw new DataAccessException("Error al obtener producto de ID=" + id, e);
     }
     return null;
   }
@@ -84,10 +89,8 @@ public class ProductoDAOImpl implements ProductoDAO {
       int filasAfectadas = stmt.executeUpdate();
 
       return filasAfectadas > 0;
-    } catch (
-
-    Exception e) {
-      throw new DataAccessException("Error al actualizar el producto con ID=" + p.getId() + ": " + e.getMessage());
+    } catch (Exception e) {
+      throw new DataAccessException("Error al actualizar el producto con ID=" + p.getId(), e);
     }
   }
 
@@ -106,7 +109,7 @@ public class ProductoDAOImpl implements ProductoDAO {
     } catch (
 
     Exception e) {
-      throw new DataAccessException("Error al eliminar el producto con ID=" + id + ": " + e.getMessage());
+      throw new DataAccessException("Error al eliminar el producto con ID=" + id, e);
     }
   }
 
@@ -135,7 +138,7 @@ public class ProductoDAOImpl implements ProductoDAO {
 
       }
     } catch (Exception e) {
-      throw new DataAccessException("Error al obtener las productos: " + e.getMessage());
+      throw new DataAccessException("Error al obtener las productos.", e);
     }
   }
 
@@ -157,7 +160,7 @@ public class ProductoDAOImpl implements ProductoDAO {
         return false;
       }
     } catch (Exception e) {
-      throw new DataAccessException("Error al verificar si existe el nombre '" + nombre + "': " + e.getMessage());
+      throw new DataAccessException("Error al verificar si existe el nombre '" + nombre, e);
     }
   }
 
@@ -188,7 +191,7 @@ public class ProductoDAOImpl implements ProductoDAO {
       }
     } catch (Exception e) {
       throw new DataAccessException(
-          "Error al obtener los productos por categoria=" + idCategoria + " : " + e.getMessage());
+          "Error al obtener los productos por categoria=" + idCategoria, e);
     }
   }
 
@@ -209,7 +212,23 @@ public class ProductoDAOImpl implements ProductoDAO {
       }
     } catch (Exception e) {
       throw new DataAccessException(
-          "Error al verificar si existe la categoria ID=" + idCategoria + " : " + e.getMessage());
+          "Error al verificar si existe la categoria ID=" + idCategoria, e);
+    }
+  }
+
+  @Override
+  public boolean descontarStock(int id, int cantidad, Connection c) {
+    String sql = "UPDATE productos SET cantidad = cantidad - ? WHERE id = ? AND cantidad >= ?";
+
+    try (PreparedStatement stmt = c.prepareStatement(sql)) {
+      stmt.setInt(1, cantidad);
+      stmt.setInt(2, id);
+      stmt.setInt(3, cantidad);
+
+      int filasAfectadas = stmt.executeUpdate();
+      return filasAfectadas > 0; // 0 = no había stock suficiente
+    } catch (Exception e) {
+      throw new DataAccessException("Error al descontar stock: cantidad=" + cantidad + " ID=" + id, e);
     }
   }
 }
